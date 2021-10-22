@@ -106,14 +106,14 @@ class Main {
   }
 
   // Execute logic
-  update () {
+  update (delta) {
     for (const key in this.games) {
       const game = this.games[key]
       // A game can exist for up to 1 hour after everyone has left
       if (game.players.length === 0 && Date.now() - game.lastDisconnect > 1000 * 60 * 60) {
         delete this.games[key]
       } else if (game.running) {
-        game.update()
+        game.update(delta)
       }
     }
   }

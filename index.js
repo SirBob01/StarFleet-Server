@@ -22,5 +22,12 @@ const { Main } = require('./src/main')
 const main = new Main(server)
 
 // Update the world at 60 FPS, broadcast game state at 15 fps
-setInterval(() => main.update(), 1000.0 / 60.0)
+let lastUpdate = Date.now()
+setInterval(() => {
+  let now = Date.now()
+  let dt = now - lastUpdate
+  lastUpdate = now
+
+  main.update(dt)
+}, 1000.0 / 60.0)
 setInterval(() => main.broadcast(), 1000.0 / 15.0)

@@ -97,7 +97,7 @@ class Game {
   }
 
   // Update game state
-  update () {
+  update (delta) {
   }
 }
 
