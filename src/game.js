@@ -11,6 +11,7 @@ class Game {
   handleHostInput () {
     this.host.on('start', () => {
       if (!this.running) {
+        this.sendStartData()
         this.generate()
         this.running = true
       }
@@ -76,6 +77,17 @@ class Game {
     }
   }
 
+  // Send initial data to the clients
+  sendStartData () {
+    const pixelData = {}
+    for (const player of this.players) {
+      pixelData[player.socket.id] = player.pixelData
+    }
+    for (const player of this.players) {
+      player.socket.emit('start', { pixelData })
+    }
+  }
+
   // Randomly generate the planets, asteroids, and stars
   generate () {
   }
@@ -84,7 +96,7 @@ class Game {
   broadcast () {
   }
 
-  // Run the game
+  // Update game state
   update () {
   }
 }
