@@ -35,6 +35,7 @@ class Main {
         }
         this.games[key] = new Game()
         this.games[key].join(player)
+        this.games[key].sendLobbyData()
 
         // Share the key with friends to join lobby
         callback(key)
@@ -45,6 +46,7 @@ class Main {
         if (key in this.games && !this.games[key].running) {
           const joined = this.games[key].players.map(player => player.socket.id).includes(socket.id)
           if (!joined) this.games[key].join(player)
+          this.games[key].sendLobbyData()
           callback(true)
         } else {
           callback(false)
@@ -54,6 +56,7 @@ class Main {
       // Set player name
       socket.on('setName', name => {
         player.name = name
+        player.game.sendLobbyData()
       })
 
       // Set player pixel data
@@ -69,29 +72,36 @@ class Main {
       // Handle mouse input
       socket.on('mousestate', player.handleMouse)
 
-      // Handle leaving a game
-      socket.on('leave', () => {
-        if (player.game) {
-          player.game.disconnect(socket.id)
+      // Kicking a player
+      socket.on('kick', id => {
+        const target = this.players[id]
+        let game
+        if (target.game) {
+          game = target.game
+          game.disconnect(id)
+          game.sendLobbyData()
+          target.socket.emit('kick')
         }
       })
 
       // Handle disconnect
       socket.on('disconnect', () => {
+        let game
         if (player.game) {
-          player.game.disconnect(socket.id)
+          game = player.game
+          game.disconnect(socket.id)
+          game.sendLobbyData()
         }
         delete this.players[socket.id]
       })
     })
   }
 
-  // Send world state information to all clients
+  // Let each game broadcast data
   broadcast () {
-    console.log('Games', Object.keys(this.games).map(g => [g, this.games[g].host ? this.games[g].host.id : null]))
-    console.log('Players', Object.keys(this.players))
     for (const key in this.games) {
-      this.games[key].broadcast()
+      const game = this.games[key]
+      if (game.running) this.games[key].broadcast()
     }
   }
 
@@ -102,7 +112,7 @@ class Main {
       // A game can exist for up to 1 hour after everyone has left
       if (game.players.length === 0 && Date.now() - game.lastDisconnect > 1000 * 60 * 60) {
         delete this.games[key]
-      } else {
+      } else if (game.running) {
         game.update()
       }
     }

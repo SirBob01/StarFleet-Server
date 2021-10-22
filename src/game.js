@@ -12,7 +12,7 @@ class Game {
     this.host.on('start', () => {
       if (!this.running) {
         this.generate()
-        this.runnning = true
+        this.running = true
       }
     })
     this.host.on('stop', () => {
@@ -58,6 +58,22 @@ class Game {
     }
 
     this.lastDisconnect = Date.now()
+  }
+
+  sendLobbyData () {
+    const data = {}
+    data.players = this.players.map(player => {
+      return {
+        id: player.socket.id,
+        name: player.name,
+        host: player.socket.id === this.host.id
+      }
+    })
+    for (const player of this.players) {
+      data.name = player.name
+      data.isHost = player.socket.id === this.host.id
+      player.socket.emit('lobby', data)
+    }
   }
 
   // Randomly generate the planets, asteroids, and stars
