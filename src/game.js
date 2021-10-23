@@ -1,3 +1,6 @@
+const { Vec2D } = require("dynamojs-engine")
+const { Ship } = require("./entities/ship")
+
 class Game {
   constructor () {
     this.host = null
@@ -11,8 +14,8 @@ class Game {
   handleHostInput () {
     this.host.on('start', () => {
       if (!this.running) {
-        this.sendStartData()
         this.generate()
+        this.sendStartData()
         this.running = true
       }
     })
@@ -33,8 +36,8 @@ class Game {
     }
   }
 
+  // Disconnect a player
   disconnect (id) {
-    // Disconnect a player
     let newHost = false
     for (let i = 0; i < this.players.length; i++) {
       const playerId = this.players[i].socket.id
@@ -77,6 +80,20 @@ class Game {
     }
   }
 
+  // Randomly generate the planets, asteroids, and stars
+  generate () {
+    this.mapSize = new Vec2D(1000, 1000).scale(this.players.length)
+    
+    // Randomly allocate each player a sector
+    // Ensure assigned sectors are evenly spaced
+    let sectors = Math.pow(this.players.length, 2)
+
+    for(let i = 0; i < this.players.length; i++) {
+      const player = this.players[i]
+      this.entities.push(new Ship(100 + Math.random() * 300, 100 + Math.random() * 300, player.socket.id, 0, 'scout'))
+    }
+  }
+
   // Send initial data to the clients
   sendStartData () {
     const pixelData = {}
@@ -84,20 +101,42 @@ class Game {
       pixelData[player.socket.id] = player.pixelData
     }
     for (const player of this.players) {
-      player.socket.emit('start', { pixelData })
+      player.socket.emit('start', { pixelData, mapSize: this.mapSize })
     }
-  }
-
-  // Randomly generate the planets, asteroids, and stars
-  generate () {
   }
 
   // Broadcast players the relevant game state
   broadcast () {
+    for(const player of this.players) {
+      player.socket.emit('broadcast', {
+        entities: this.entities.map(e => {
+          e.class = e.constructor.name
+          return e
+        })
+      })
+    }
   }
 
   // Update game state
   update (delta) {
+    // Fetch the list of all entities and update them
+    for(const entity of this.entities) {
+      entity.update(delta)
+      entity.move(delta)
+    }
+
+    // Handle collisions and interactions
+    const n = this.entities.length
+    for(let i = 0; i < n - 1; i++) {
+      for(let j = i+1; j < n; j++) {
+        const a = this.entities[i]
+        const b = this.entities[j]
+        if(a.isColliding(b)) {
+          a.interact(b)
+          b.interact(a)
+        }
+      }
+    }
   }
 }
 

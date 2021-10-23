@@ -22,7 +22,6 @@ class Player {
       carrier: null
     }
     this.resources = 0
-    this.entities = []
   }
 
   handleMouse (mousedata) {
