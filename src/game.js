@@ -50,6 +50,12 @@ class Game {
         break
       }
     }
+    
+    // Delete entities owned by that player
+    for (let i = this.entities.length - 1; i >= 0; i--) {
+      const entity = this.entities[i]
+      if (entity.owner === id) this.entities.splice(i, 1)
+    }
 
     // Host left, get a new host
     if (newHost) {
