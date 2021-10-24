@@ -82,7 +82,7 @@ class Game {
 
   // Randomly generate the planets, asteroids, and stars
   generate () {
-    this.mapSize = new Vec2D(1000, 1000).scale(this.players.length)
+    this.mapSize = new Vec2D(2000, 2000).scale(this.players.length)
     
     // Randomly allocate each player a sector
     // Ensure assigned sectors are evenly spaced
