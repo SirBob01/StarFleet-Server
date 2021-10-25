@@ -1,5 +1,5 @@
-const { Vec2D } = require("dynamojs-engine")
-const { Ship } = require("./entities/ship")
+const { Vec2D } = require('dynamojs-engine')
+const { Ship } = require('./entities/ship')
 
 class Game {
   constructor (key) {
@@ -51,7 +51,7 @@ class Game {
         break
       }
     }
-    
+
     // Delete entities owned by that player
     for (let i = this.entities.length - 1; i >= 0; i--) {
       const entity = this.entities[i]
@@ -90,12 +90,12 @@ class Game {
   // Randomly generate the planets, asteroids, and stars
   generate () {
     this.mapSize = new Vec2D(2000, 2000).scale(this.players.length)
-    
+
     // Randomly allocate each player a sector
     // Ensure assigned sectors are evenly spaced
-    let sectors = Math.pow(this.players.length, 2)
+    const sectors = Math.pow(this.players.length, 2)
 
-    for(let i = 0; i < this.players.length; i++) {
+    for (let i = 0; i < this.players.length; i++) {
       const player = this.players[i]
       this.entities.push(new Ship(100 + Math.random() * 300, 100 + Math.random() * 300, player.socket.id, 0, 'scout'))
     }
@@ -114,7 +114,7 @@ class Game {
 
   // Broadcast players the relevant game state
   broadcast () {
-    for(const player of this.players) {
+    for (const player of this.players) {
       player.socket.emit('broadcast', {
         entities: this.entities.map(e => {
           e.class = e.constructor.name
@@ -127,18 +127,18 @@ class Game {
   // Update game state
   update (delta) {
     // Fetch the list of all entities and update them
-    for(const entity of this.entities) {
+    for (const entity of this.entities) {
       entity.update(delta)
       entity.move(delta)
     }
 
     // Handle collisions and interactions
     const n = this.entities.length
-    for(let i = 0; i < n - 1; i++) {
-      for(let j = i+1; j < n; j++) {
+    for (let i = 0; i < n - 1; i++) {
+      for (let j = i + 1; j < n; j++) {
         const a = this.entities[i]
         const b = this.entities[j]
-        if(a.isColliding(b)) {
+        if (a.isColliding(b)) {
           a.interact(b)
           b.interact(a)
         }

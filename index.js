@@ -24,8 +24,8 @@ const main = new Main(server)
 // Update the world at 60 FPS, broadcast game state at 15 fps
 let lastUpdate = Date.now()
 setInterval(() => {
-  let now = Date.now()
-  let dt = now - lastUpdate
+  const now = Date.now()
+  const dt = now - lastUpdate
   lastUpdate = now
 
   main.update(dt)
