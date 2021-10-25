@@ -2,7 +2,8 @@ const { Vec2D } = require("dynamojs-engine")
 const { Ship } = require("./entities/ship")
 
 class Game {
-  constructor () {
+  constructor (key) {
+    this.key = key
     this.host = null
     this.players = []
     this.running = false
@@ -107,7 +108,7 @@ class Game {
       pixelData[player.socket.id] = player.pixelData
     }
     for (const player of this.players) {
-      player.socket.emit('start', { pixelData, mapSize: this.mapSize })
+      player.socket.emit('start', { key: this.key, pixelData, mapSize: this.mapSize })
     }
   }
 

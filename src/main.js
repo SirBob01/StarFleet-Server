@@ -33,7 +33,7 @@ class Main {
         while (key in this.games) {
           key = generateRandomString(keylen)
         }
-        this.games[key] = new Game()
+        this.games[key] = new Game(key)
         this.games[key].join(player)
         this.games[key].sendLobbyData()
 
