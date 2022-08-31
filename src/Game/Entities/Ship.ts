@@ -1,5 +1,8 @@
 import { Entity } from './Entity';
 
+/**
+ * All ship class types
+ */
 type ShipType = 'scout' | 'fighter' | 'carrier';
 
 const shipTypes = {
@@ -17,20 +20,21 @@ const shipTypes = {
   },
 };
 
+/**
+ * Ship entity
+ */
 class Ship extends Entity {
-  ownerId: string;
-
+  // Ship class
   type: string;
 
   constructor(
     x: number,
     y: number,
-    owner: string,
+    ownerId: string,
     angle: number,
     type: ShipType
   ) {
-    super(x, y, shipTypes[type].size, angle, shipTypes[type].health);
-    this.ownerId = owner;
+    super(x, y, shipTypes[type].size, angle, shipTypes[type].health, ownerId);
     this.type = type;
   }
 }

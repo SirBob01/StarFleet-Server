@@ -1,21 +1,31 @@
 import { Vec2D } from 'dynamojs-engine';
 import { Socket } from 'socket.io';
-import { Ship } from './Entities/Ship';
+import { Entity, Ship } from './Entities';
 import { Player } from './Player';
 
+/**
+ * Runs the simulation logic for an individual game
+ */
 class Game {
+  // Unique key associated with the game
   key: string;
 
+  // Host player socket
   host: Socket;
 
+  // List of players in this game
   players: Player[];
 
+  // Is running?
   running: boolean;
 
+  // Timestamp for last time a player disconnected
   lastDisconnect: number;
 
-  entities: Ship[];
+  // List of entities
+  entities: Entity[];
 
+  // Size of the map
   mapSize: Vec2D;
 
   constructor(key: string, host: Socket) {
@@ -29,7 +39,10 @@ class Game {
     this.entities = [];
   }
 
-  handleHostInput() {
+  /**
+   * Handle host input
+   */
+  public handleHostInput() {
     this.host.on('start', () => {
       if (!this.running) {
         this.generate();
@@ -42,8 +55,12 @@ class Game {
     });
   }
 
-  // Let a new player join
-  join(player: Player) {
+  /**
+   * Let a new player join
+   *
+   * @param player
+   */
+  public join(player: Player) {
     this.players.push(player);
     player.game = this;
 
@@ -54,8 +71,12 @@ class Game {
     }
   }
 
-  // Disconnect a player
-  disconnect(id: string) {
+  /**
+   * Disconnect a player
+   *
+   * @param id
+   */
+  public disconnect(id: string) {
     let newHost = false;
     for (let i = 0; i < this.players.length; i++) {
       const playerId = this.players[i].socket.id;
@@ -84,7 +105,10 @@ class Game {
     this.lastDisconnect = Date.now();
   }
 
-  sendLobbyData() {
+  /**
+   * Send lobby information to the players
+   */
+  public sendLobbyData() {
     const data: any = {
       players: [],
     };
@@ -102,8 +126,10 @@ class Game {
     }
   }
 
-  // Randomly generate the planets, asteroids, and stars
-  generate() {
+  /**
+   * Randomly generate the planets, asteroids, and stars of this map
+   */
+  public generate() {
     this.mapSize = new Vec2D(2000, 2000).scale(this.players.length);
 
     // TODO: Randomly allocate each player a sector
@@ -124,8 +150,10 @@ class Game {
     }
   }
 
-  // Send initial data to the clients
-  sendStartData() {
+  /**
+   * Send initial data to member players
+   */
+  public sendStartData() {
     const pixelData: any = {};
     for (const player of this.players) {
       pixelData[player.socket.id] = player.pixelData;
@@ -139,8 +167,10 @@ class Game {
     }
   }
 
-  // Broadcast players the relevant game state
-  broadcast() {
+  /**
+   * Broadcast players the relevant game state
+   */
+  public broadcast() {
     for (const player of this.players) {
       player.socket.emit('broadcast', {
         entities: this.entities.map((e) => {
@@ -152,9 +182,13 @@ class Game {
       });
     }
   }
-
-  // Update game state
-  update(delta: number) {
+  
+  /**
+   * Update simulation state per frame
+   * 
+   * @param delta (ms)
+   */
+  public update(delta: number) {
     // Fetch the list of all entities and update them
     for (const entity of this.entities) {
       entity.update(delta);

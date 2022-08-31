@@ -1,7 +1,6 @@
 import { Server } from 'socket.io';
 import http from 'http';
-import { Game } from './Game/Game';
-import { Player } from './Game/Player';
+import { Game, Player } from './Game';
 
 /**
  * Generate a random string of a certain length
@@ -123,8 +122,6 @@ class Main {
       }
     });
   }
-
-  // Execute logic
 
   /**
    * Execute simulation logic
