@@ -4,7 +4,8 @@
   "module": "./build/SocketTypes.js",
   "types": "./build/SocketTypes.d.ts",
   "files": [
-    "build"
+    "build",
+    "branchBuild.js"
   ],
   "dependencies": {
     "cors": "^2.8.5",
