@@ -1,6 +1,6 @@
 import { Vec2D } from 'dynamojs-engine';
 import { Socket } from 'socket.io';
-import { EmitEvents, ListenEvents } from '../ServerTypes';
+import { EmitEvents, ListenEvents } from '../SocketTypes';
 import { Entity, Ship } from './Entities';
 import { Player, SpriteSet } from './Player';
 

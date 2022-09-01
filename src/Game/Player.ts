@@ -1,6 +1,6 @@
 import { Color } from 'dynamojs-engine';
 import { Socket } from 'socket.io';
-import { EmitEvents, ListenEvents } from '../ServerTypes';
+import { EmitEvents, ListenEvents } from '../SocketTypes';
 import { ShipTypes } from './Entities';
 import { Game } from './Game';
 

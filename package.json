@@ -1,6 +1,8 @@
 {
   "name": "starfleet-server",
-  "main": "src/index.ts",
+  "main": "./build/SocketTypes.js",
+  "module": "./build/SocketTypes.js",
+  "types": "./build/SocketTypes.d.ts",
   "dependencies": {
     "cors": "^2.8.5",
     "dynamojs-engine": "^1.1.0",
@@ -12,7 +14,9 @@
   },
   "scripts": {
     "lint": "prettier --write src/* && eslint --fix src",
-    "start": "nodemon src/index.ts"
+    "build": "tsc",
+    "debug": "nodemon src/index.ts",
+    "start": "tsc && nodemon build/index.js"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

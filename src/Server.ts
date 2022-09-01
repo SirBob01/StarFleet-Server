@@ -2,7 +2,7 @@ import { Server as SocketServer } from 'socket.io';
 import http from 'http';
 import { Game, Player } from './Game';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { ListenEvents, EmitEvents } from './ServerTypes';
+import { ListenEvents, EmitEvents } from './SocketTypes';
 
 /**
  * Generate a random string of a certain length
