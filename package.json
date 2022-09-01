@@ -3,6 +3,9 @@
   "main": "./build/SocketTypes.js",
   "module": "./build/SocketTypes.js",
   "types": "./build/SocketTypes.d.ts",
+  "files": [
+    "build"
+  ],
   "dependencies": {
     "cors": "^2.8.5",
     "dynamojs-engine": "^1.1.0",
@@ -16,7 +19,8 @@
     "lint": "prettier --write src/* && eslint --fix src",
     "build": "tsc",
     "debug": "nodemon src/index.ts",
-    "start": "tsc && nodemon build/index.js"
+    "start": "tsc && nodemon build/index.js",
+    "postinstall": "node branchBuild.js"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
