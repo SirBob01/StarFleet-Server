@@ -5,7 +5,7 @@ import { Vec2D } from 'dynamojs-engine';
  */
 class Entity {
   // Id of the player who owns this entity
-  ownerId: string | undefined;
+  ownerId: string | null;
 
   // Position
   center: Vec2D;
@@ -22,7 +22,7 @@ class Entity {
   // Radius of bounding circle
   size: number;
 
-  // Angle of sprite 
+  // Angle of sprite
   angle: number;
 
   // Mass, informs how difficult object is to move
@@ -39,7 +39,7 @@ class Entity {
     health: number,
     ownerId?: string
   ) {
-    this.ownerId = ownerId;
+    this.ownerId = ownerId || null;
     this.center = new Vec2D(x, y);
     this.vel = new Vec2D(0, 0);
     this.acc = new Vec2D(0, 0);

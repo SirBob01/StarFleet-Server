@@ -1,40 +1,22 @@
 import { Color } from 'dynamojs-engine';
 import { Socket } from 'socket.io';
+import { EmitEvents, ListenEvents } from '../ServerTypes';
+import { ShipTypes } from './Entities';
 import { Game } from './Game';
 
-const names = [
-  'Dynamic',
-  'Neutron',
-  'Star',
-  'Saber',
-  'Optimal',
-  'Mega',
-  'Zord',
-  'Fighter',
-  'Scout',
-  'Master',
-  'Padawan',
-  'Wing',
-  'Plasmic',
-  'Plasma',
-  'Transformer',
-  'Bot',
-  'Robot',
-  'Man',
-  'Core',
-  'Figure',
-  'Actor',
-];
-
 /**
- * Generate a random name from the name word bank
- *
- * @returns new name
+ * Defines the keyboard input data format from the client
  */
-function randomName() {
-  const n1 = Math.floor(Math.random() * names.length);
-  const n2 = Math.floor(Math.random() * names.length);
-  return names[n1] + names[n2];
+interface KeyInputData {
+  /**
+   * Key code
+   */
+  key: string;
+
+  /**
+   * Pressed or released?
+   */
+  pressed: boolean;
 }
 
 /**
@@ -55,49 +37,96 @@ interface MouseInputData {
 }
 
 /**
- * Defines the keyboard input data format from the client
+ * Defines the pixel data received
  */
-interface KeyInputData {
+interface PixelData {
   /**
-   * Key code
+   * Total number of pixels = size * size
    */
-  key: string;
+  size: number;
 
   /**
-   * Pressed or released?
+   * Array of colors corresponding to the individual pixels
    */
-  pressed: boolean;
+  colors: Color[];
 }
 
-interface PixelData {
-  //
-  size: number;
-  pixelData: Color[];
+/**
+ * Defines the sprite set of a player
+ */
+type SpriteSet = {
+  [T in keyof ShipTypes]: PixelData;
+};
+
+/**
+ * Generate a random name from the name word bank
+ *
+ * @returns new name
+ */
+function randomName() {
+  const names = [
+    'Dynamo',
+    'Iron',
+    'Spider',
+    'Proto',
+    'Neutron',
+    'Star',
+    'Saber',
+    'Optimal',
+    'Mega',
+    'Zord',
+    'Fighter',
+    'Scout',
+    'Master',
+    'Padawan',
+    'Wing',
+    'Plasmic',
+    'Sonic',
+    'Transformer',
+    'Bot',
+    'Robot',
+    'Man',
+    'Core',
+    'Figure',
+    'Actor',
+  ];
+  const n1 = Math.floor(Math.random() * names.length);
+  const n2 = Math.floor(Math.random() * names.length);
+  return names[n1] + names[n2];
 }
 
 /**
  * Represents a player in the game
  */
 class Player {
-  socket: Socket;
+  socket: Socket<ListenEvents, EmitEvents>;
 
   game: Game | null;
 
   name: string;
 
-  pixelData: { scout: null | PixelData; fighter: null | PixelData; carrier: null | PixelData };
+  sprites: SpriteSet;
 
   resources: number;
 
-  constructor(socket: Socket) {
+  constructor(socket: Socket<ListenEvents, EmitEvents>) {
     this.socket = socket;
     this.game = null;
 
     this.name = randomName();
-    this.pixelData = {
-      scout: null,
-      fighter: null,
-      carrier: null,
+    this.sprites = {
+      scout: {
+        size: 0,
+        colors: [],
+      },
+      fighter: {
+        size: 0,
+        colors: [],
+      },
+      carrier: {
+        size: 0,
+        colors: [],
+      },
     };
     this.resources = 0;
   }
@@ -105,15 +134,16 @@ class Player {
   /**
    * Handle mouse input
    *
-   * @param mousedata 
+   * @param mousedata
    */
   public handleMouse(mousedata: MouseInputData) {}
 
   /**
    * Handle keyboard input
-   * @param keydata 
+   * @param keydata
    */
   public handleKeys(keydata: KeyInputData) {}
 }
 
 export { Player };
+export type { KeyInputData, MouseInputData, PixelData, SpriteSet };

@@ -1,6 +1,8 @@
-import { Server } from 'socket.io';
+import { Server as SocketServer } from 'socket.io';
 import http from 'http';
 import { Game, Player } from './Game';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { ListenEvents, EmitEvents } from './ServerTypes';
 
 /**
  * Generate a random string of a certain length
@@ -18,15 +20,18 @@ const generateRandomString = (length: number) => {
   return string;
 };
 
-class Main {
-  io: Server;
+/**
+ * Server instance that coordinates the simulation of multiple concurrent games
+ */
+class Server {
+  private io: SocketServer<ListenEvents, EmitEvents, DefaultEventsMap>;
 
-  players: Map<string, Player>;
+  private players: Map<string, Player>;
 
-  games: Map<string, Game>;
+  private games: Map<string, Game>;
 
   constructor(server: http.Server) {
-    this.io = new Server(server, {
+    this.io = new SocketServer(server, {
       cors: {
         origin: '*',
       },
@@ -78,9 +83,9 @@ class Main {
 
       // Set player pixel data
       socket.on('setPixelData', (data) => {
-        player.pixelData.scout = data.scout;
-        player.pixelData.fighter = data.fighter;
-        player.pixelData.carrier = data.carrier;
+        player.sprites.scout = data.scout;
+        player.sprites.fighter = data.fighter;
+        player.sprites.carrier = data.carrier;
       });
 
       // Handle key input
@@ -143,4 +148,4 @@ class Main {
   }
 }
 
-export { Main };
+export { Server };

@@ -1,7 +1,58 @@
 import { Vec2D } from 'dynamojs-engine';
 import { Socket } from 'socket.io';
+import { EmitEvents, ListenEvents } from '../ServerTypes';
 import { Entity, Ship } from './Entities';
-import { Player } from './Player';
+import { Player, SpriteSet } from './Player';
+
+/**
+ * Defines the necessary data for the client to store player information
+ */
+interface LobbyPlayer {
+  id: string;
+  name: string;
+  host: boolean;
+}
+
+/**
+ * Data sent on lobby initialization
+ */
+interface LobbyData {
+  players: LobbyPlayer[];
+  name: string;
+  isHost: boolean;
+}
+
+/**
+ * Data sent when the game is started
+ */
+interface StartData {
+  key: string;
+  mapSize: Vec2D;
+  pixelData: { [id: string]: SpriteSet };
+}
+
+/**
+ * Data sent for each entity
+ */
+interface EntityData {
+  type: string;
+  ownerId: string | null;
+  size: number;
+  mass: number;
+  health: number;
+  center: Vec2D;
+  vel: Vec2D;
+  acc: Vec2D;
+  angle: number;
+  angularVel: number;
+}
+
+/**
+ * Live game state information
+ */
+interface GameStateData {
+  entities: EntityData[];
+}
 
 /**
  * Runs the simulation logic for an individual game
@@ -11,7 +62,7 @@ class Game {
   key: string;
 
   // Host player socket
-  host: Socket;
+  host: Socket<ListenEvents, EmitEvents>;
 
   // List of players in this game
   players: Player[];
@@ -37,6 +88,8 @@ class Game {
     this.mapSize = new Vec2D(0, 0);
 
     this.entities = [];
+
+    this.handleHostInput();
   }
 
   /**
@@ -63,12 +116,6 @@ class Game {
   public join(player: Player) {
     this.players.push(player);
     player.game = this;
-
-    // Set the host
-    if (this.host === null) {
-      this.host = player.socket;
-      this.handleHostInput();
-    }
   }
 
   /**
@@ -109,19 +156,19 @@ class Game {
    * Send lobby information to the players
    */
   public sendLobbyData() {
-    const data: any = {
-      players: [],
-    };
-    this.players.forEach((player) => {
-      data.players.push({
-        id: player.socket.id,
-        name: player.name,
-        host: player.socket.id === this.host.id,
-      });
-    });
     for (const player of this.players) {
-      data.name = player.name;
-      data.isHost = player.socket.id === this.host.id;
+      const data: LobbyData = {
+        players: [],
+        name: player.name,
+        isHost: player.socket.id === this.host.id,
+      };
+      this.players.forEach((player) => {
+        data.players.push({
+          id: player.socket.id,
+          name: player.name,
+          host: player.socket.id === this.host.id,
+        });
+      });
       player.socket.emit('lobby', data);
     }
   }
@@ -154,9 +201,9 @@ class Game {
    * Send initial data to member players
    */
   public sendStartData() {
-    const pixelData: any = {};
+    const pixelData: { [id: string]: SpriteSet } = {};
     for (const player of this.players) {
-      pixelData[player.socket.id] = player.pixelData;
+      pixelData[player.socket.id] = player.sprites;
     }
     for (const player of this.players) {
       player.socket.emit('start', {
@@ -175,17 +222,17 @@ class Game {
       player.socket.emit('broadcast', {
         entities: this.entities.map((e) => {
           return {
-            class: e.constructor.name,
+            type: e.constructor.name,
             ...e,
           };
         }),
       });
     }
   }
-  
+
   /**
    * Update simulation state per frame
-   * 
+   *
    * @param delta (ms)
    */
   public update(delta: number) {
@@ -211,3 +258,4 @@ class Game {
 }
 
 export { Game };
+export type { LobbyData, StartData, GameStateData };

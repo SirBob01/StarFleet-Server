@@ -1,11 +1,26 @@
 import { Entity } from './Entity';
 
 /**
- * All ship class types
+ * Defines ship statistics
  */
-type ShipType = 'scout' | 'fighter' | 'carrier';
+interface ShipStatistics {
+  size: number;
+  health: number;
+}
 
-const shipTypes = {
+/**
+ * Defines base statistics for each ship
+ */
+interface ShipTypes {
+  scout: ShipStatistics;
+  fighter: ShipStatistics;
+  carrier: ShipStatistics;
+}
+
+/**
+ * Base ship statistics
+ */
+const shipTypes: ShipTypes = {
   scout: {
     size: 32,
     health: 15,
@@ -23,16 +38,16 @@ const shipTypes = {
 /**
  * Ship entity
  */
-class Ship extends Entity {
+class Ship<Type extends keyof ShipTypes> extends Entity {
   // Ship class
-  type: string;
+  type: Type;
 
   constructor(
     x: number,
     y: number,
     ownerId: string,
     angle: number,
-    type: ShipType
+    type: Type
   ) {
     super(x, y, shipTypes[type].size, angle, shipTypes[type].health, ownerId);
     this.type = type;
@@ -40,3 +55,4 @@ class Ship extends Entity {
 }
 
 export { Ship };
+export type { ShipTypes };
