@@ -2,9 +2,12 @@
 import {
   KeyInputData,
   MouseInputData,
+  PixelData,
   SpriteSet,
+  LobbyPlayer,
   LobbyData,
   StartData,
+  EntityData,
   GameStateData,
 } from './Game';
 
@@ -88,8 +91,11 @@ export type {
   EmitEvents, 
   KeyInputData,
   MouseInputData,
+  PixelData,
   SpriteSet,
+  LobbyPlayer,
   LobbyData,
   StartData,
+  EntityData,
   GameStateData
 };

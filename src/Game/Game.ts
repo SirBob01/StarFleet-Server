@@ -258,4 +258,4 @@ class Game {
 }
 
 export { Game };
-export type { LobbyData, StartData, GameStateData };
+export type { LobbyPlayer, LobbyData, StartData, EntityData, GameStateData };
