@@ -18,7 +18,8 @@ interface LobbyPlayer {
  */
 interface LobbyData {
   players: LobbyPlayer[];
-  name: string;
+  playerId: string;
+  playerName: string;
 }
 
 /**
@@ -162,9 +163,13 @@ class Game {
         host: player.socket.id === this.host.id,
       };
     });
-    for (const { name, socket } of this.players) {
-      const data: LobbyData = { players, name };
-      socket.emit('lobby', data);
+    for (const player of this.players) {
+      const data: LobbyData = {
+        players,
+        playerId: player.socket.id,
+        playerName: player.name,
+      };
+      player.socket.emit('lobby', data);
     }
   }
 
