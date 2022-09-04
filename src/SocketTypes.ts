@@ -86,9 +86,9 @@ interface EmitEvents {
   kick: () => void;
 }
 
-export type { 
-  ListenEvents, 
-  EmitEvents, 
+export type {
+  ListenEvents,
+  EmitEvents,
   KeyInputData,
   MouseInputData,
   PixelData,
@@ -97,5 +97,5 @@ export type {
   LobbyData,
   StartData,
   EntityData,
-  GameStateData
+  GameStateData,
 };

@@ -19,7 +19,6 @@ interface LobbyPlayer {
 interface LobbyData {
   players: LobbyPlayer[];
   name: string;
-  isHost: boolean;
 }
 
 /**
@@ -156,20 +155,16 @@ class Game {
    * Send lobby information to the players
    */
   public sendLobbyData() {
-    for (const player of this.players) {
-      const data: LobbyData = {
-        players: [],
+    const players: LobbyPlayer[] = this.players.map((player) => {
+      return {
+        id: player.socket.id,
         name: player.name,
-        isHost: player.socket.id === this.host.id,
+        host: player.socket.id === this.host.id,
       };
-      this.players.forEach((player) => {
-        data.players.push({
-          id: player.socket.id,
-          name: player.name,
-          host: player.socket.id === this.host.id,
-        });
-      });
-      player.socket.emit('lobby', data);
+    });
+    for (const { name, socket } of this.players) {
+      const data: LobbyData = { players, name };
+      socket.emit('lobby', data);
     }
   }
 
